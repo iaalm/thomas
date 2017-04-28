@@ -22,6 +22,20 @@ function layer:__init(opt)
   -- self.decoder.lookup_table:share(self.encoder.lookup_table, 'weight', 'bias')
 end
 
+function layer:cuda()
+  self.encoder = self.encoder:cuda()
+  self.decoder = self.decoder:cuda()
+  self.expand = self.expand:cuda()
+  self.m = self.m:cuda()
+  for k,v in ipairs(self.encoder) do
+    print(k)
+    v:cuda()
+  end
+  for k,v in ipairs(self.decoder) do
+    v:cuda()
+  end
+end
+
 function layer:parameters()
   -- we only have two internal modules, return their params
   local p1,g1 = self.encoder:parameters()

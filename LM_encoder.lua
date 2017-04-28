@@ -171,7 +171,7 @@ function layer:updateGradInput(seq, gradOutput)
     -- concat state gradients and output vector gradients at time step t
     local dout = {}
     for k=1,#dstate[t] do table.insert(dout, dstate[t][k]) end
-    table.insert(dout, torch.zeros(batch_size * seq_per_img, 1))
+    table.insert(dout, torch.zeros(batch_size * seq_per_img, 1):cuda())
     local dinputs = self.clones[t]:backward(self.inputs[t], dout)
     -- split the gradient to xt and to state
     dstate[t-1] = {} -- copy over rest to state grad

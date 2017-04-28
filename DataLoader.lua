@@ -86,8 +86,8 @@ function DataLoader:getBatch(opt)
 
   -- pick an index of the datapoint to load next
   local img_batch_raw = torch.LongTensor(batch_size, self.densecap_per_img, self.seq_length)
-  local location_batch_raw = torch.Tensor(batch_size, self.densecap_per_img, 4)
-  local score_batch_raw = torch.Tensor(batch_size, self.densecap_per_img)
+  local location_batch_raw = torch.FloatTensor(batch_size, self.densecap_per_img, 4)
+  local score_batch_raw = torch.FloatTensor(batch_size, self.densecap_per_img)
   
   local label_batch = torch.LongTensor(batch_size * seq_per_img, self.seq_length)
   local max_index = #split_ix

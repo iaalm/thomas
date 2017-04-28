@@ -73,6 +73,10 @@ end
 local loader = DataLoader{h5_file_densecap = opt.input_h5_densecap, h5_file_cocotalk = opt.input_h5_cocotalk, json_file = opt.input_json}
 local model = nn.LM{vocab_size = loader.vocab_size, input_encoding_size = opt.input_encoding_size, rnn_size = opt.rnn_size}
 local crit = nn.LanguageModelCriterion()
+if opt.gpuid >= 0 then
+  model:cuda()
+  crit = crit:cuda()
+end
 local params, grad_params= model:getParameters()
 print('total number of parameters',params:nElement())
 assert(params:nElement() == grad_params:nElement())
@@ -83,6 +87,10 @@ local function train_batch()
 
 	-- get batch of data  
 	local data = loader:getBatch{batch_size = opt.batch_size, split = 'train', seq_per_img = opt.seq_per_img}
+  if opt.gpuid >= 0 then
+    data.densecap = data.densecap:cuda()
+    data.seq = data.seq:cuda()
+  end
 	-- data: 
 	-- data.densecap batch_size*densecap_per_img*densecao_length; 
 	-- data.location batch_size*densecap_per_img*4; 
@@ -126,6 +134,10 @@ local function eval_batch()
 	
 	    -- fetch a batch of data
 	    local data = loader:getBatch{batch_size = opt.batch_size, split = 'val', seq_per_img = 		opt.seq_per_img}
+      if opt.gpuid >= 0 then
+        data.densecap = data.densecap:cuda()
+    data.seq = data.seq:cuda()
+      end
             -- forward to get loss
 	    local logprobs=model:forward(data)
 	    local loss= crit:forward(logprobs, data.seq)
